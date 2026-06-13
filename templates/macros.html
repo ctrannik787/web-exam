@@ -1,0 +1,43 @@
+{% macro book_form(book, genres, is_create) %}
+<div class="row g-3">
+    <div class="col-md-8">
+        <label class="form-label" for="title">Название</label>
+        <input class="form-control" id="title" name="title" required value="{{ request.form.get('title', book.title or '') }}">
+    </div>
+    <div class="col-md-2">
+        <label class="form-label" for="year">Год</label>
+        <input class="form-control" id="year" name="year" type="number" min="0" required value="{{ request.form.get('year', book.year or '') }}">
+    </div>
+    <div class="col-md-2">
+        <label class="form-label" for="pages">Страниц</label>
+        <input class="form-control" id="pages" name="pages" type="number" min="1" required value="{{ request.form.get('pages', book.pages or '') }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="publisher">Издательство</label>
+        <input class="form-control" id="publisher" name="publisher" required value="{{ request.form.get('publisher', book.publisher or '') }}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label" for="author">Автор</label>
+        <input class="form-control" id="author" name="author" required value="{{ request.form.get('author', book.author or '') }}">
+    </div>
+    <div class="col-12">
+        <label class="form-label" for="genres">Жанры</label>
+        {% set current_genres = request.form.getlist('genres') or book.genres | map(attribute='id') | map('string') | list %}
+        <select class="form-select" id="genres" name="genres" multiple required size="5">
+            {% for genre in genres %}
+                <option value="{{ genre.id }}" {% if genre.id|string in current_genres %}selected{% endif %}>{{ genre.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% if is_create %}
+        <div class="col-12">
+            <label class="form-label" for="cover">Обложка</label>
+            <input class="form-control" id="cover" name="cover" type="file" accept="image/*" required>
+        </div>
+    {% endif %}
+    <div class="col-12">
+        <label class="form-label" for="description">Краткое описание</label>
+        <textarea class="form-control" id="description" name="description" required data-editor="markdown">{{ request.form.get('description', book.description or '') }}</textarea>
+    </div>
+</div>
+{% endmacro %}
